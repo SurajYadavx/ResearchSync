@@ -1,0 +1,154 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Request Help - ResearchSync</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+</head>
+<body>
+<nav class="navbar navbar-expand-lg navbar-dark bg-primary">
+    <div class="container-fluid">
+        <a class="navbar-brand" href="/dashboard"><i class="fas fa-flask me-2"></i>ResearchSync</a>
+        <div class="navbar-nav ms-auto">
+            <a class="nav-link" href="/dashboard">Dashboard</a>
+            <a class="nav-link" href="/community">Community</a>
+            <a class="nav-link" href="/auth/logout">Logout</a>
+        </div>
+    </div>
+</nav>
+
+<div class="container mt-4">
+    <div class="row justify-content-center">
+        <div class="col-lg-8">
+            <div class="card">
+                <div class="card-header">
+                    <h4><i class="fas fa-hands-helping me-2"></i>Request Community Help</h4>
+                    <p class="mb-0 text-muted">Describe your problem and get help from experienced community members</p>
+                </div>
+                <div class="card-body">
+                    <div th:if="${errorMsg}" class="alert alert-danger">
+                        <span th:text="${errorMsg}"></span>
+                    </div>
+
+                    <form method="post" th:action="@{/community/help/create}" th:object="${helpRequest}">
+                        <div class="mb-3">
+                            <label for="title" class="form-label">Problem Title *</label>
+                            <input type="text" class="form-control" id="title" th:field="*{title}"
+                                   placeholder="Brief description of your problem" required maxlength="200">
+                            <small class="text-muted">Be specific and clear in your title</small>
+                        </div>
+
+                        <div class="row mb-3">
+                            <div class="col-md-6">
+                                <label for="category" class="form-label">Category *</label>
+                                <select class="form-select" id="category" th:field="*{category}" required>
+                                    <option value="">Select category...</option>
+                                    <option value="TECHNICAL">Technical Issues</option>
+                                    <option value="RESEARCH">Research Methodology</option>
+                                    <option value="CODING">Programming & Coding</option>
+                                    <option value="DATABASE">Database Issues</option>
+                                    <option value="DOCUMENTATION">Documentation Help</option>
+                                    <option value="UI_UX">UI/UX Design</option>
+                                    <option value="TESTING">Testing & Debugging</option>
+                                    <option value="DEPLOYMENT">Deployment Issues</option>
+                                    <option value="OTHER">Other</option>
+                                </select>
+                            </div>
+                            <div class="col-md-6">
+                                <label for="urgency" class="form-label">Urgency Level</label>
+                                <select class="form-select" id="urgency" th:field="*{urgency}">
+                                    <option value="LOW">Low - Can wait a few days</option>
+                                    <option value="MEDIUM" selected>Medium - Need help soon</option>
+                                    <option value="HIGH">High - Need help today</option>
+                                    <option value="CRITICAL">Critical - Urgent help needed</option>
+                                </select>
+                            </div>
+                        </div>
+
+                        <div class="mb-3">
+                            <label for="description" class="form-label">Detailed Description *</label>
+                            <textarea class="form-control" id="description" th:field="*{description}" rows="6"
+                                      placeholder="Provide detailed information about your problem:
+• What are you trying to achieve?
+• What have you tried so far?
+• What error messages are you getting?
+• What environment/tools are you using?"
+                                      required maxlength="2000"></textarea>
+                            <small class="text-muted">The more details you provide, the better help you'll receive</small>
+                        </div>
+
+                        <div class="mb-3">
+                            <label for="tags" class="form-label">Tags (Optional)</label>
+                            <input type="text" class="form-control" id="tags" th:field="*{tags}"
+                                   placeholder="java, spring-boot, mysql, react (comma-separated)">
+                            <small class="text-muted">Add relevant technology tags to help experts find your question</small>
+                        </div>
+
+                        <div class="mb-4">
+                            <label for="accessLevel" class="form-label">Helper Access Level</label>
+                            <select class="form-select" id="accessLevel" th:field="*{accessLevel}">
+                                <option value="read_only">Read Only - View my workspace files</option>
+                                <option value="limited">Limited - Basic workspace access</option>
+                                <option value="guided">Guided - Screen sharing assistance</option>
+                                <option value="full_access">Full Access - Complete workspace access</option>
+                            </select>
+                            <small class="text-muted">Choose how much access helpers should have to assist you</small>
+                        </div>
+
+                        <!-- Info Alert -->
+                        <div class="alert alert-info">
+                            <i class="fas fa-info-circle me-2"></i>
+                            <strong>How it works:</strong>
+                            <ul class="mb-0 mt-2">
+                                <li>Community experts will see your request</li>
+                                <li>They can offer help based on their expertise</li>
+                                <li>You can accept help and grant temporary workspace access</li>
+                                <li>Helpers earn reputation points for successful assistance</li>
+                            </ul>
+                        </div>
+
+                        <div class="d-flex justify-content-between">
+                            <a href="/community" class="btn btn-secondary">
+                                <i class="fas fa-arrow-left me-2"></i>Cancel
+                            </a>
+                            <button type="submit" class="btn btn-primary">
+                                <i class="fas fa-paper-plane me-2"></i>Submit Help Request
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+
+            <!-- Tips Card -->
+            <div class="card mt-4">
+                <div class="card-header">
+                    <h6><i class="fas fa-lightbulb me-2"></i>Tips for Getting Better Help</h6>
+                </div>
+                <div class="card-body">
+                    <div class="row">
+                        <div class="col-md-6">
+                            <ul class="list-unstyled">
+                                <li><i class="fas fa-check text-success me-2"></i>Be specific about your problem</li>
+                                <li><i class="fas fa-check text-success me-2"></i>Include error messages if any</li>
+                                <li><i class="fas fa-check text-success me-2"></i>Mention what you've already tried</li>
+                            </ul>
+                        </div>
+                        <div class="col-md-6">
+                            <ul class="list-unstyled">
+                                <li><i class="fas fa-check text-success me-2"></i>Add relevant screenshots</li>
+                                <li><i class="fas fa-check text-success me-2"></i>Choose appropriate category</li>
+                                <li><i class="fas fa-check text-success me-2"></i>Set realistic urgency level</li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>

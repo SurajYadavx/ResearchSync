@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Create Workspace - ResearchSync</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <style>
+        :root { --bg-dark:#1a202c;--bg-card:rgba(255,255,255,0.1);--border:rgba(255,255,255,0.2);--text:#edf2f7;--accent:#667eea; }
+        body { background:var(--bg-dark); color:var(--text); min-height:100vh; }
+        .container { padding-top:80px; }
+        .glass-card { background:var(--bg-card); border:1px solid var(--border); backdrop-filter:blur(10px); border-radius:1rem; }
+        .card-header { background:var(--accent); color:#fff; border-radius:1rem 1rem 0 0; }
+        .form-control, .form-select { background:rgba(255,255,255,0.85); border-radius:0.5rem; border:none; }
+        .btn-primary { background:var(--accent); border:none; border-radius:0.5rem; }
+    </style>
+</head>
+<body>
+<div class="container">
+    <div class="row justify-content-center">
+        <div class="col-lg-6">
+            <div class="glass-card shadow">
+                <div class="card-header text-center py-3">
+                    <h4><i class="fas fa-plus me-2"></i>Create New Workspace</h4>
+                </div>
+                <div class="card-body p-4">
+                    <div th:if="${error}" class="alert alert-danger" role="alert" th:text="${error}"></div>
+                    <form method="post" th:action="@{/workspace/create}" th:object="${workspace}">
+                        <div class="mb-3">
+                            <label class="form-label">Workspace Name</label>
+                            <input type="text" class="form-control" th:field="*{name}" required>
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label">Description</label>
+                            <textarea class="form-control" th:field="*{description}" rows="4"></textarea>
+                        </div>
+                        <div class="d-flex justify-content-between">
+                            <a href="/dashboard" class="btn btn-outline-light">Cancel</a>
+                            <button type="submit" class="btn btn-primary">Create Workspace</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>

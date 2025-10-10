@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Community Help - ResearchSync</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+</head>
+<body>
+<nav class="navbar navbar-expand-lg navbar-dark bg-primary">
+    <div class="container-fluid">
+        <a class="navbar-brand" href="/dashboard"><i class="fas fa-flask me-2"></i>ResearchSync</a>
+        <div class="navbar-nav ms-auto">
+            <a class="nav-link" href="/dashboard">Dashboard</a>
+            <a class="nav-link" href="/community/my-requests">My Requests</a>
+            <a class="nav-link" href="/auth/logout">Logout</a>
+        </div>
+    </div>
+</nav>
+
+<div class="container mt-4">
+    <div class="row">
+        <div class="col-12">
+            <div class="d-flex justify-content-between align-items-center mb-4">
+                <h2><i class="fas fa-hands-helping me-2"></i>Community Help</h2>
+                <a href="/community/help/create" class="btn btn-primary">
+                    <i class="fas fa-plus me-2"></i>Request Help
+                </a>
+            </div>
+        </div>
+    </div>
+
+    <div class="row">
+        <div class="col-12">
+            <div class="card">
+                <div class="card-header">
+                    <h5>Open Help Requests</h5>
+                </div>
+                <div class="card-body">
+                    <div th:if="${helpRequests.empty}" class="text-center text-muted py-4">
+                        <i class="fas fa-hands-helping fa-3x mb-3"></i>
+                        <h6>No open help requests</h6>
+                        <p>Be the first to request help from the community!</p>
+                    </div>
+
+                    <div th:if="${!helpRequests.empty}">
+                        <div class="help-request-item mb-3 p-3 border rounded" th:each="request : ${helpRequests}">
+                            <div class="d-flex justify-content-between align-items-start">
+                                <div class="flex-grow-1">
+                                    <h6><a th:href="@{/community/help/{id}(id=${request.requestId})}" th:text="${request.title}">Help Request Title</a></h6>
+                                    <p class="text-muted mb-2" th:text="${#strings.abbreviate(request.description, 200)}">Description preview...</p>
+                                    <div class="d-flex gap-3 align-items-center">
+                                        <small class="text-muted">
+                                            <i class="fas fa-user me-1"></i>
+                                            <span th:text="${request.requester.name}">Requester</span>
+                                        </small>
+                                        <small class="text-muted">
+                                            <i class="fas fa-calendar me-1"></i>
+                                            <span th:text="${#temporals.format(request.createdDate, 'MMM dd, yyyy')}">Date</span>
+                                        </small>
+                                    </div>
+                                </div>
+                                <div class="text-end">
+                                        <span class="badge me-2"
+                                              th:classappend="${request.category == T(com.researchsync.model.HelpRequest$Category).TECHNICAL} ? 'bg-info' : (${request.category == T(com.researchsync.model.HelpRequest$Category).RESEARCH} ? 'bg-success' : 'bg-secondary')"
+                                              th:text="${request.category}">Category</span>
+                                    <span class="badge"
+                                          th:classappend="${request.urgency == T(com.researchsync.model.HelpRequest$Urgency).HIGH} ? 'bg-danger' : (${request.urgency == T(com.researchsync.model.HelpRequest$Urgency).MEDIUM} ? 'bg-warning' : 'bg-light text-dark')"
+                                          th:text="${request.urgency}">Urgency</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>

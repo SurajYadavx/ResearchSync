@@ -1,0 +1,172 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title th:text="${helpRequest.title} + ' - ResearchSync'">Help Request - ResearchSync</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+</head>
+<body>
+<nav class="navbar navbar-expand-lg navbar-dark bg-primary">
+    <div class="container-fluid">
+        <a class="navbar-brand" href="/dashboard"><i class="fas fa-flask me-2"></i>ResearchSync</a>
+        <div class="navbar-nav ms-auto">
+            <a class="nav-link" href="/dashboard">Dashboard</a>
+            <a class="nav-link" href="/community">Community</a>
+            <a class="nav-link" href="/auth/logout">Logout</a>
+        </div>
+    </div>
+</nav>
+
+<div class="container mt-4">
+    <!-- Success/Error Messages -->
+    <div th:if="${successMsg}" class="alert alert-success alert-dismissible fade show">
+        <span th:text="${successMsg}"></span>
+        <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+    </div>
+
+    <div th:if="${errorMsg}" class="alert alert-danger alert-dismissible fade show">
+        <span th:text="${errorMsg}"></span>
+        <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+    </div>
+
+    <div class="row">
+        <div class="col-lg-8">
+            <!-- Help Request Details -->
+            <div class="card">
+                <div class="card-header">
+                    <div class="d-flex justify-content-between align-items-start">
+                        <div>
+                            <h4 th:text="${helpRequest.title}">Help Request Title</h4>
+                            <div class="mt-2">
+                                    <span class="badge me-2"
+                                          th:classappend="${helpRequest.category.name() == 'TECHNICAL'} ? 'bg-info' : (${helpRequest.category.name() == 'RESEARCH'} ? 'bg-success' : 'bg-secondary')"
+                                          th:text="${helpRequest.category}">Category</span>
+                                <span class="badge me-2"
+                                      th:classappend="${helpRequest.urgency.name() == 'CRITICAL'} ? 'bg-danger' : (${helpRequest.urgency.name() == 'HIGH'} ? 'bg-warning' : (${helpRequest.urgency.name() == 'MEDIUM'} ? 'bg-info' : 'bg-light text-dark'))"
+                                      th:text="${helpRequest.urgency}">Urgency</span>
+                                <span class="badge"
+                                      th:classappend="${helpRequest.status.name() == 'RESOLVED'} ? 'bg-success' : (${helpRequest.status.name() == 'IN_PROGRESS'} ? 'bg-warning' : (${helpRequest.status.name() == 'CANCELLED'} ? 'bg-danger' : 'bg-secondary'))"
+                                      th:text="${helpRequest.status}">Status</span>
+                            </div>
+                        </div>
+                        <small class="text-muted" th:text="${#temporals.format(helpRequest.createdDate, 'MMM dd, yyyy HH:mm')}">Date</small>
+                    </div>
+                </div>
+                <div class="card-body">
+                    <div class="mb-3">
+                        <strong>Requested by:</strong>
+                        <span th:text="${helpRequest.requester.name}">Requester Name</span>
+                        <span class="text-muted">(<span th:text="${helpRequest.requester.university ?: 'University not specified'}">University</span>)</span>
+                    </div>
+
+                    <div class="mb-3" th:if="${helpRequest.helper != null}">
+                        <strong>Helper:</strong>
+                        <span th:text="${helpRequest.helper.name}">Helper Name</span>
+                        <span class="badge bg-success ms-2">Helping</span>
+                    </div>
+
+                    <div class="mb-3">
+                        <strong>Description:</strong>
+                        <div class="mt-2 p-3 bg-light border rounded">
+                            <p th:text="${helpRequest.description}" class="mb-0" style="white-space: pre-wrap;">Description</p>
+                        </div>
+                    </div>
+
+                    <div class="mb-3" th:if="${helpRequest.tags != null && !helpRequest.tags.isEmpty()}">
+                        <strong>Tags:</strong>
+                        <div class="mt-2">
+                                <span th:each="tag, iterStat : ${#strings.listSplit(helpRequest.tags, ',')}"
+                                      class="badge bg-light text-dark me-1"
+                                      th:text="${#strings.trim(tag)}">Tag</span>
+                        </div>
+                    </div>
+
+                    <div class="mb-3">
+                        <strong>Access Level Offered:</strong>
+                        <span class="badge bg-info" th:text="${helpRequest.accessLevel}">Access Level</span>
+                        <small class="text-muted ms-2">
+                                <span th:switch="${helpRequest.accessLevel}">
+                                    <span th:case="'read_only'">Helper can view workspace files</span>
+                                    <span th:case="'limited'">Helper has basic workspace access</span>
+                                    <span th:case="'guided'">Helper can assist via screen sharing</span>
+                                    <span th:case="'full_access'">Helper has complete workspace access</span>
+                                </span>
+                        </small>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Offer Help Section -->
+            <div class="card mt-3" th:if="${canHelp && helpRequest.status.name() == 'OPEN'}">
+                <div class="card-header">
+                    <h6><i class="fas fa-hand-paper me-2"></i>Offer Your Help</h6>
+                </div>
+                <div class="card-body">
+                    <p>Do you have experience with <strong th:text="${helpRequest.category}">this category</strong>?
+                        Help a fellow community member solve their problem!</p>
+                    <form method="post" th:action="@{/community/help/{id}/offer-help(id=${helpRequest.requestId})}">
+                        <button type="submit" class="btn btn-success">
+                            <i class="fas fa-hands-helping me-2"></i>I Want to Help
+                        </button>
+                    </form>
+                </div>
+            </div>
+        </div>
+
+        <!-- Sidebar -->
+        <div class="col-lg-4">
+            <!-- Request Info -->
+            <div class="card">
+                <div class="card-header">
+                    <h6><i class="fas fa-info-circle me-2"></i>Request Information</h6>
+                </div>
+                <div class="card-body">
+                    <div class="mb-2">
+                        <small class="text-muted">Created:</small><br>
+                        <span th:text="${#temporals.format(helpRequest.createdDate, 'MMM dd, yyyy HH:mm')}">Date</span>
+                    </div>
+                    <div class="mb-2" th:if="${helpRequest.deadline != null}">
+                        <small class="text-muted">Deadline:</small><br>
+                        <span th:text="${#temporals.format(helpRequest.deadline, 'MMM dd, yyyy HH:mm')}"
+                              th:classappend="${helpRequest.deadline.isBefore(T(java.time.LocalDateTime).now())} ? 'text-danger fw-bold' : ''">Deadline</span>
+                    </div>
+                    <div class="mb-2" th:if="${helpRequest.resolvedDate != null}">
+                        <small class="text-muted">Resolved:</small><br>
+                        <span th:text="${#temporals.format(helpRequest.resolvedDate, 'MMM dd, yyyy HH:mm')}">Date</span>
+                    </div>
+                    <div th:if="${helpRequest.workspace != null}">
+                        <small class="text-muted">Related Workspace:</small><br>
+                        <a th:href="@{/workspace/{id}(id=${helpRequest.workspace.workspaceId})}"
+                           th:text="${helpRequest.workspace.name}">Workspace</a>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Quick Actions -->
+            <div class="card mt-3">
+                <div class="card-header">
+                    <h6><i class="fas fa-bolt me-2"></i>Actions</h6>
+                </div>
+                <div class="card-body">
+                    <div class="d-grid gap-2">
+                        <a href="/community" class="btn btn-outline-primary">
+                            <i class="fas fa-arrow-left me-2"></i>Back to Community
+                        </a>
+                        <a href="/community/my-requests" class="btn btn-outline-secondary">
+                            <i class="fas fa-list me-2"></i>My Requests
+                        </a>
+                        <a href="/community/help/create" class="btn btn-outline-success">
+                            <i class="fas fa-plus me-2"></i>New Request
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>

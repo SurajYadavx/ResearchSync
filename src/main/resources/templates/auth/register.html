@@ -1,0 +1,288 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Register - ResearchSync</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <style>
+        :root {
+            --primary-gradient: linear-gradient(135deg, #11998e 0%, #38ef7d 100%);
+            --secondary-gradient: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            --glass-bg: rgba(255, 255, 255, 0.1);
+            --glass-border: rgba(255, 255, 255, 0.2);
+            --text-light: #ffffff;
+            --text-dark: #2d3748;
+        }
+
+        body {
+            background: var(--primary-gradient);
+            min-height: 100vh;
+            overflow-x: hidden;
+            position: relative;
+        }
+
+        #particles-js {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            top: 0;
+            left: 0;
+            z-index: 1;
+        }
+
+        .container {
+            position: relative;
+            z-index: 10;
+        }
+
+        .glass-card {
+            background: var(--glass-bg);
+            backdrop-filter: blur(20px);
+            border: 1px solid var(--glass-border);
+            border-radius: 20px;
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
+            transition: all 0.3s ease;
+            animation: slideUp 0.8s ease-out;
+        }
+
+        @keyframes slideUp {
+            from {
+                opacity: 0;
+                transform: translateY(30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .card-header {
+            background: transparent;
+            border: none;
+            padding: 2rem 2rem 0;
+        }
+
+        .card-title {
+            color: var(--text-light);
+            font-weight: 600;
+            font-size: 1.8rem;
+            text-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
+        }
+
+        .form-label {
+            color: var(--text-light);
+            font-weight: 500;
+            margin-bottom: 0.8rem;
+        }
+
+        .form-control, .form-select {
+            background: rgba(255, 255, 255, 0.9);
+            border: 2px solid transparent;
+            border-radius: 12px;
+            padding: 0.8rem 1rem;
+            transition: all 0.3s ease;
+            color: var(--text-dark);
+        }
+
+        .form-control:focus, .form-select:focus {
+            background: rgba(255, 255, 255, 0.95);
+            border-color: #11998e;
+            box-shadow: 0 0 0 3px rgba(17, 153, 142, 0.1);
+            transform: scale(1.02);
+        }
+
+        .btn-primary {
+            background: var(--secondary-gradient);
+            border: none;
+            border-radius: 12px;
+            padding: 0.8rem 2rem;
+            font-weight: 600;
+            letter-spacing: 0.5px;
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 25px rgba(102, 126, 234, 0.3);
+        }
+
+        .alert-danger {
+            background: rgba(245, 101, 101, 0.1);
+            color: #c53030;
+            border: none;
+            border-radius: 12px;
+            border-left: 4px solid #f56565;
+        }
+
+        .auth-link {
+            color: var(--text-light);
+            text-decoration: none;
+            font-weight: 500;
+            transition: all 0.3s ease;
+        }
+
+        .auth-link:hover {
+            color: #38ef7d;
+            text-shadow: 0 2px 4px rgba(56, 239, 125, 0.3);
+        }
+
+        .floating-icon {
+            position: absolute;
+            animation: float 6s ease-in-out infinite;
+            opacity: 0.6;
+        }
+
+        @keyframes float {
+            0%, 100% { transform: translateY(0px); }
+            50% { transform: translateY(-20px); }
+        }
+
+        .icon-1 { top: 5%; left: 5%; animation-delay: 0s; }
+        .icon-2 { top: 10%; right: 5%; animation-delay: 2s; }
+        .icon-3 { bottom: 10%; left: 10%; animation-delay: 4s; }
+        .icon-4 { bottom: 5%; right: 15%; animation-delay: 6s; }
+    </style>
+</head>
+<body>
+<div id="particles-js"></div>
+
+<!-- Floating Icons -->
+<i class="fas fa-user-graduate floating-icon icon-1 text-white fa-2x"></i>
+<i class="fas fa-atom floating-icon icon-2 text-white fa-2x"></i>
+<i class="fas fa-dna floating-icon icon-3 text-white fa-2x"></i>
+<i class="fas fa-rocket floating-icon icon-4 text-white fa-2x"></i>
+
+<div class="container">
+    <div class="row justify-content-center py-5">
+        <div class="col-md-8 col-lg-6">
+            <div class="card glass-card border-0">
+                <div class="card-header text-center">
+                    <h3 class="card-title">
+                        <i class="fas fa-user-plus me-2"></i>Join ResearchSync
+                    </h3>
+                    <p class="text-white-50 mb-0">Create your research collaboration account</p>
+                </div>
+                <div class="card-body p-4">
+                    <div th:if="${errorMsg}" class="alert alert-danger" role="alert">
+                        <i class="fas fa-exclamation-triangle me-2"></i>
+                        <span th:text="${errorMsg}"></span>
+                    </div>
+
+                    <form method="post" action="/auth/register" th:object="${user}">
+                        <div class="row">
+                            <div class="col-md-6">
+                                <div class="mb-3">
+                                    <label for="name" class="form-label">
+                                        <i class="fas fa-user me-2"></i>Full Name
+                                    </label>
+                                    <input type="text" class="form-control" id="name" th:field="*{name}" required>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="mb-3">
+                                    <label for="email" class="form-label">
+                                        <i class="fas fa-envelope me-2"></i>Email Address
+                                    </label>
+                                    <input type="email" class="form-control" id="email" th:field="*{email}" required>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="row">
+                            <div class="col-md-6">
+                                <div class="mb-3">
+                                    <label for="password" class="form-label">
+                                        <i class="fas fa-lock me-2"></i>Password
+                                    </label>
+                                    <input type="password" class="form-control" id="password" th:field="*{password}" required>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="mb-3">
+                                    <label for="userType" class="form-label">
+                                        <i class="fas fa-graduation-cap me-2"></i>User Type
+                                    </label>
+                                    <select class="form-select" id="userType" th:field="*{userType}" required>
+                                        <option value="">Select Type</option>
+                                        <option value="STUDENT">Student</option>
+                                        <option value="PROFESSOR">Professor</option>
+                                    </select>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="row">
+                            <div class="col-md-6">
+                                <div class="mb-3">
+                                    <label for="university" class="form-label">
+                                        <i class="fas fa-university me-2"></i>University
+                                    </label>
+                                    <input type="text" class="form-control" id="university" th:field="*{university}">
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="mb-4">
+                                    <label for="department" class="form-label">
+                                        <i class="fas fa-building me-2"></i>Department
+                                    </label>
+                                    <input type="text" class="form-control" id="department" th:field="*{department}">
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="d-grid mb-3">
+                            <button type="submit" class="btn btn-primary">
+                                <i class="fas fa-user-plus me-2"></i>Create Account
+                            </button>
+                        </div>
+                    </form>
+
+                    <div class="text-center">
+                        <p class="text-white-50 mb-2">Already have an account?</p>
+                        <a th:href="@{/auth/login}" class="auth-link">
+                            <i class="fas fa-sign-in-alt me-1"></i>Sign In
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/particles.js@2.0.0/particles.min.js"></script>
+<script>
+    particlesJS('particles-js', {
+        particles: {
+            number: { value: 60 },
+            color: { value: '#ffffff' },
+            shape: { type: 'circle' },
+            opacity: { value: 0.4 },
+            size: { value: 3, random: true },
+            line_linked: {
+                enable: true,
+                distance: 150,
+                color: '#ffffff',
+                opacity: 0.3,
+                width: 1
+            },
+            move: {
+                enable: true,
+                speed: 4,
+                direction: 'none',
+                out_mode: 'out'
+            }
+        },
+        interactivity: {
+            events: {
+                onhover: { enable: true, mode: 'grab' },
+                onclick: { enable: true, mode: 'push' }
+            }
+        }
+    });
+</script>
+</body>
+</html>
